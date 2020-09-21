@@ -1,7 +1,7 @@
 # Elastic stack (ELK) on Docker
 
 [![Join the chat at https://gitter.im/deviantony/docker-elk](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/deviantony/docker-elk?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Elastic Stack version](https://img.shields.io/badge/ELK-7.8.0-blue.svg?style=flat)](https://github.com/deviantony/docker-elk/issues/515)
+[![Elastic Stack version](https://img.shields.io/badge/ELK-7.9.1-blue.svg?style=flat)](https://github.com/deviantony/docker-elk/issues/529)
 [![Build Status](https://api.travis-ci.org/deviantony/docker-elk.svg?branch=master)](https://travis-ci.org/deviantony/docker-elk)
 
 Run the latest version of the [Elastic stack][elk-stack] with Docker and Docker Compose.
@@ -45,6 +45,7 @@ Other available stack variants:
    * [How to configure Logstash](#how-to-configure-logstash)
    * [How to disable paid features](#how-to-disable-paid-features)
    * [How to scale out the Elasticsearch cluster](#how-to-scale-out-the-elasticsearch-cluster)
+   * [How to reset a password programmatically](#how-to-reset-a-password-programmatically)
 4. [Extensibility](#extensibility)
    * [How to add plugins](#how-to-add-plugins)
    * [How to enable the provided extensions](#how-to-enable-the-provided-extensions)
@@ -238,7 +239,7 @@ Create an index pattern via the Kibana API:
 ```console
 $ curl -XPOST -D- 'http://localhost:5601/api/saved_objects/index-pattern' \
     -H 'Content-Type: application/json' \
-    -H 'kbn-version: 7.8.0' \
+    -H 'kbn-version: 7.9.1' \
     -u elastic:<your generated elastic password> \
     -d '{"attributes":{"title":"logstash-*","timeFieldName":"@timestamp"}}'
 ```
@@ -295,6 +296,20 @@ settings][trial-license]).
 ### How to scale out the Elasticsearch cluster
 
 Follow the instructions from the Wiki: [Scaling out Elasticsearch](https://github.com/deviantony/docker-elk/wiki/Elasticsearch-cluster)
+
+### How to reset a password programmatically
+
+If for any reason your are unable to use Kibana to change the password of your users (including [built-in
+users][builtin-users]), you can use the Elasticsearch API instead and achieve the same result.
+
+In the example below, we reset the password of the `elastic` user (notice "/user/elastic" in the URL):
+
+```console
+$ curl -XPOST -D- 'http://localhost:9200/_security/user/elastic/_password' \
+    -H 'Content-Type: application/json' \
+    -u elastic:<your current elastic password> \
+    -d '{"password" : "<your new password>"}'
+```
 
 ## Extensibility
 
